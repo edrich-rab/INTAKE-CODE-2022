@@ -8,6 +8,11 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Joystick; 
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -20,6 +25,12 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  private WPI_TalonSRX intakeMotor;
+  private DigitalInput holdSwitch;
+  private Joystick joystick;
+  private Intake intake; 
+  
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -29,6 +40,12 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    intakeMotor = new WPI_TalonSRX(0); //get device id 
+    holdSwitch = new DigitalInput(0); // get port for switch
+    joystick = new Joystick(0);
+    intake = new Intake(intakeMotor, holdSwitch); 
+
+
   }
 
   /**
@@ -78,7 +95,21 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic(){
+    if (joystick.getRawButton(1)){ //get button
+      intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
+    }
+    else if(joystick.getRawButton(2)) { // if button 2 is pressed, motor will outtake 
+      intake.setOutakeMode();
+    }
+    else if (joystick.getRawButton(3)){ // if button 3 is pressed, motor will be set to feeding mode
+      intake.setFeedingMode();
+    }
+    else{
+      intake.setStopMode(); // if no buttons are pressed, the motor will not move 
+    }
+    intake.run(); // intake run method
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
