@@ -5,10 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick; 
@@ -25,7 +28,7 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private WPI_TalonSRX intakeMotor;
+  private WPI_VictorSPX intakeMotor;
   private DigitalInput holdSwitch;
   private Joystick joystick;
   private Intake intake; 
@@ -40,7 +43,8 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    intakeMotor = new WPI_TalonSRX(0); //get device id 
+  
+    intakeMotor = new WPI_VictorSPX(1); //get device id 
     holdSwitch = new DigitalInput(0); // get port for switch
     joystick = new Joystick(0);
     intake = new Intake(intakeMotor, holdSwitch); 
@@ -96,19 +100,25 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic(){
+    //intake.run();
+    intake.intake(joystick.getY());
     if (joystick.getRawButton(1)){ //get button
       intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
     }
+
     else if(joystick.getRawButton(2)) { // if button 2 is pressed, motor will outtake 
       intake.setOutakeMode();
     }
+
     else if (joystick.getRawButton(3)){ // if button 3 is pressed, motor will be set to feeding mode
       intake.setFeedingMode();
     }
+
     else{
       intake.setStopMode(); // if no buttons are pressed, the motor will not move 
     }
-    intake.run(); // intake run method
+  
+    
   }
 
   /** This function is called once when the robot is disabled. */
@@ -117,7 +127,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override

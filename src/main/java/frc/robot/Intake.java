@@ -8,7 +8,7 @@ public class Intake {
 
     private MotorController intakeMotor; // the intake motor
     private DigitalInput holdSwitch; // limit switch
-    private double intakeSpeed = 0; // the speed of the intake motor
+    private double intakeSpeed = 0.4; // the speed of the intake motor
 
     public Intake(MotorController newIntakeMotor, DigitalInput newHoldSwitch){
         intakeMotor = newIntakeMotor;
@@ -19,7 +19,7 @@ public class Intake {
         INTAKING, OUTTAKING, FEEDING, TESTING, STOP
     }
 
-    private state mode = state.STOP; 
+    public state mode = state.STOP; 
 
     public void setIntakeMode(){ // sets mode to intaking
         mode = state.INTAKING;
@@ -57,7 +57,7 @@ public class Intake {
         intakeMotor.set(0);
     }
 
-    public void motorCheckIntake(){ //intakes cargo and holds it when switch is being triggered
+    private void motorCheckIntake(){ //intakes cargo and holds it when switch is being triggered
         if (cargoCheck()){
             stopMotor();
         }
@@ -66,7 +66,7 @@ public class Intake {
         }
     }
 
-    public void feeding(){ // feeds the ball into the shooter
+    private void feeding(){ // feeds the ball into the shooter
         if (!cargoCheck()){
             intake(intakeSpeed);
         }
@@ -75,12 +75,10 @@ public class Intake {
         }
     }
 
-    public void display(){
+    public void run(){
         SmartDashboard.getBoolean("Limit switch", cargoCheck()); // displays if the limit switch is being triggered
         SmartDashboard.getString("Mode", mode.toString()); // displays the current state of the intake
-    }
 
-    public void run(){
         switch(mode){
             case INTAKING: // sets intake to intaking stage
             motorCheckIntake();
