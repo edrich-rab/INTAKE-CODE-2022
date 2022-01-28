@@ -67,7 +67,7 @@ public class Intake {
     }
 
     private void feeding(){ // feeds the ball into the shooter
-        if (!cargoCheck()){
+        if (cargoCheck()){
             intake(intakeSpeed);
         }
         else{
@@ -75,9 +75,12 @@ public class Intake {
         }
     }
 
+    public void displayMethod(){
+        SmartDashboard.putBoolean("Limit switch", cargoCheck()); // displays if the limit switch is being triggered
+        SmartDashboard.putString("Mode", mode.toString()); // displays the current state of the intake
+    }
+
     public void run(){
-        SmartDashboard.getBoolean("Limit switch", cargoCheck()); // displays if the limit switch is being triggered
-        SmartDashboard.getString("Mode", mode.toString()); // displays the current state of the intake
 
         switch(mode){
             case INTAKING: // sets intake to intaking stage

@@ -95,13 +95,15 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    
+  }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic(){
-    //intake.run();
-    intake.intake(joystick.getY());
+    intake.displayMethod();
+    //intake.intake(joystick.getY());
     if (joystick.getRawButton(1)){ //get button
       intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
     }
@@ -118,6 +120,7 @@ public class Robot extends TimedRobot {
       intake.setStopMode(); // if no buttons are pressed, the motor will not move 
     }
   
+    intake.run();
     
   }
 
