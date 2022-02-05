@@ -16,7 +16,7 @@ public class Intake {
     }
 
     public enum state{ // states of the intake
-        INTAKING, OUTTAKING, FEEDING, TESTING, STOP
+        INTAKING, OUTTAKING, FEEDING, OVERRIDE, TESTING, STOP
     }
 
     public state mode = state.STOP; 
@@ -31,6 +31,10 @@ public class Intake {
 
     public void setFeedingMode(){ // sets mode to feeding mode
         mode = state.FEEDING;
+    }
+
+    public void setOverrideMode(){
+        mode = state.OVERRIDE;
     }
 
     public void setTestingMode(){ // sets mode to testing mode
@@ -93,6 +97,10 @@ public class Intake {
 
             case FEEDING: // sets intake to feeding stage
             feeding();
+            break;
+
+            case OVERRIDE: // overrides sensor
+            intake(intakeSpeed);
             break;
 
             case STOP: // sets motor to stop stage
