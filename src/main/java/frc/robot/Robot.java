@@ -5,10 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -28,7 +30,7 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private WPI_VictorSPX intakeMotor;
+  private WPI_TalonSRX intakeMotor;
   private DigitalInput holdSwitch;
   private Joystick joystick;
   private Intake intake; 
@@ -44,7 +46,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
   
-    intakeMotor = new WPI_VictorSPX(1); //get device id 
+    intakeMotor = new WPI_TalonSRX(1); //get device id 
     holdSwitch = new DigitalInput(0); // get port for switch
     joystick = new Joystick(0);
     intake = new Intake(intakeMotor, holdSwitch); 
@@ -114,6 +116,10 @@ public class Robot extends TimedRobot {
 
     else if (joystick.getRawButton(3)){ // if button 3 is pressed, motor will be set to feeding mode
       intake.setFeedingMode();
+    }
+
+    else if (joystick.getRawButton(4)){ // if button 4 is pressed, motor will move forward ot be set into override mode
+      intake.setOverrideMode();
     }
 
     else{
