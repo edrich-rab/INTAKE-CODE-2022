@@ -46,10 +46,10 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
   
-    intakeMotor = new WPI_TalonSRX(1); //get device id 
+    intakeMotor = new WPI_TalonSRX(8); //get device id 
     holdSwitch = new DigitalInput(0); // get port for switch
     joystick = new Joystick(0);
-    intake = new Intake(intakeMotor, holdSwitch); 
+    //intake = new Intake(intakeMotor, ); 
 
 
   }

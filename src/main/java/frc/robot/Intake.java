@@ -3,16 +3,22 @@ package frc.robot;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput; 
+import com.revrobotics.ColorSensorV3;
 
 public class Intake {
 
     private MotorController intakeMotor; // the intake motor
     private DigitalInput holdSwitch; // limit switch
     private double intakeSpeed = 0.4; // the speed of the intake motor
+    private ColorSensorV3 colorSensor; // color sensor
+    private int targetSpot = 1000; // sweeeeet sweeeeet target spot for sensor
+    private int farSpot = 0; 
+    private int closeSpot = 2000;
 
-    public Intake(MotorController newIntakeMotor, DigitalInput newHoldSwitch){
+    public Intake(MotorController newIntakeMotor, DigitalInput newHoldSwitch, ColorSensorV3 newColorSensorV3){
         intakeMotor = newIntakeMotor;
         holdSwitch = newHoldSwitch;
+        colorSensor = newColorSensorV3;
     }
 
     public enum state{ // states of the intake
@@ -45,21 +51,44 @@ public class Intake {
         mode = state.STOP;
     }
     
+    public int getDistance(){
+        return colorSensor.getProximity();
+    }
+
     public boolean cargoCheck(){ //checks the limit switch if it is being triggered or not
-        return holdSwitch.get();
+        return getDistance() == targetSpot;
+    }
+ 
+    public boolean farRangeCheck(){ // checks if the distance the sensor senses is in the range of the far spot
+        if (getDistance()>=farSpot && getDistance() < targetSpot){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean closeRangeCheck(){ // checks if the distance the sensor senses is in the range of the close spot
+        if (getDistance() <= closeSpot && getDistance() > targetSpot){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public void intake(double speed){ //method for the motor intaking
-        intakeMotor.set(speed);
+        intakeMotor.set(-speed);
     }
 
     public void output(double speed){ //output or outtaking
-        intakeMotor.set(-speed);
+        intakeMotor.set(speed);
     }
 
     public void stopMotor(){ // stops motor
         intakeMotor.set(0);
     }
+
 
     private void motorCheckIntake(){ //intakes cargo and holds it when switch is being triggered
         if (cargoCheck()){
