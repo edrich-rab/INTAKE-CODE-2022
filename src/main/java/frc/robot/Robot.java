@@ -5,17 +5,21 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick; 
 
 /**
@@ -32,6 +36,8 @@ public class Robot extends TimedRobot {
 
   private WPI_TalonSRX intakeMotor;
   private DigitalInput holdSwitch;
+  private ColorSensorV3 colorSensor;
+  private Timer intakeTimer;
   private Joystick joystick;
   private Intake intake; 
   
@@ -48,8 +54,10 @@ public class Robot extends TimedRobot {
   
     intakeMotor = new WPI_TalonSRX(8); //get device id 
     holdSwitch = new DigitalInput(0); // get port for switch
+    colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+    intakeTimer = new Timer();
     joystick = new Joystick(0);
-    //intake = new Intake(intakeMotor, ); 
+    intake = new Intake(intakeMotor, colorSensor, intakeTimer); 
 
 
   }
@@ -98,7 +106,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    
+    intake.timerReset();
   }
 
   /** This function is called periodically during operator control. */

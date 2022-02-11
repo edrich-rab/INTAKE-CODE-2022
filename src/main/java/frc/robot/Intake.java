@@ -3,22 +3,38 @@ package frc.robot;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput; 
+import edu.wpi.first.wpilibj.Timer;
+
+import java.util.concurrent.CountDownLatch;
+
 import com.revrobotics.ColorSensorV3;
 
 public class Intake {
 
     private MotorController intakeMotor; // the intake motor
-    private DigitalInput holdSwitch; // limit switch
-    private double intakeSpeed = 0.4; // the speed of the intake motor
+    //private DigitalInput holdSwitch; // limit switch
+    private double slowIntakeSpeed = 0.25;
+    private double intakeSpeed = 0.5; // the speed of the intake motor
+    private double fastIntakeSpeed = 0.75;
+    private double outPutSpeed = 0.2;
     private ColorSensorV3 colorSensor; // color sensor
-    private int targetSpot = 1000; // sweeeeet sweeeeet target spot for sensor
-    private int farSpot = 0; 
-    private int closeSpot = 2000;
+    private Timer runDelay;
+    private double farDelay = 12;
+    private double closeDelay = 1.3;
+    //private int targetRange = 80; // sweeeeet sweeeeet target spot for sensor
+    private int farCounter = 0;
+    private int closeCounter = 0;
+    private int farSpot = 50; // high 50s - low 70s
+    private int closeSpot = 280; //  180s - low 200s
+    private int farLimit = 80;
+    private int closeLimit = 90;
+    
 
-    public Intake(MotorController newIntakeMotor, DigitalInput newHoldSwitch, ColorSensorV3 newColorSensorV3){
+    public Intake(MotorController newIntakeMotor, /*DigitalInput newHoldSwitch,*/ ColorSensorV3 newColorSensorV3, Timer newRunDelay){
         intakeMotor = newIntakeMotor;
-        holdSwitch = newHoldSwitch;
+        //holdSwitch = newHoldSwitch;
         colorSensor = newColorSensorV3;
+        runDelay = newRunDelay;
     }
 
     public enum state{ // states of the intake
@@ -55,12 +71,34 @@ public class Intake {
         return colorSensor.getProximity();
     }
 
-    public boolean cargoCheck(){ //checks the limit switch if it is being triggered or not
-        return getDistance() == targetSpot;
+    /*public boolean targetSpot(){ //checks the limit switch if it is being triggered or not
+        return getDistance() >= ;
+    }
+    */
+
+    public boolean ballHasEntered(){
+        return getDistance() >= farSpot;
+    }
+
+    public boolean farFromTarget(){
+        return getDistance() <= farLimit;
+    }
+
+    public boolean closeToTarget(){
+        return getDistance() >= closeLimit;
+    }
+
+    public boolean targetRange(){
+        if (getDistance() >= farLimit && getDistance() <= closeLimit){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
  
     public boolean farRangeCheck(){ // checks if the distance the sensor senses is in the range of the far spot
-        if (getDistance()>=farSpot && getDistance() < targetSpot){
+        if (getDistance() >= farSpot && getDistance() <= farLimit){
             return true;
         }
         else{
@@ -69,7 +107,7 @@ public class Intake {
     }
 
     public boolean closeRangeCheck(){ // checks if the distance the sensor senses is in the range of the close spot
-        if (getDistance() <= closeSpot && getDistance() > targetSpot){
+        if (getDistance() <= closeSpot && getDistance() >= closeLimit){
             return true;
         }
         else{
@@ -77,6 +115,10 @@ public class Intake {
         }
     }
 
+    public void timerReset(){
+        runDelay.reset();
+        runDelay.stop();
+    }
     public void intake(double speed){ //method for the motor intaking
         intakeMotor.set(-speed);
     }
@@ -91,16 +133,107 @@ public class Intake {
 
 
     private void motorCheckIntake(){ //intakes cargo and holds it when switch is being triggered
-        if (cargoCheck()){
-            stopMotor();
+        if(ballHasEntered()){
+            if(farRangeCheck()){
+                switch(farCounter){
+                    case 0:
+                        runDelay.start();
+                        farCounter++;
+                    break;
+
+                    case 1:
+                        if(runDelay.get() >= farDelay){
+                            runDelay.stop();
+                            farCounter++;
+                        }
+
+                        else{
+                            intake(intakeSpeed);
+                        }
+                    break;
+
+                    case 2:
+                        stopMotor();
+                        if(!ballHasEntered()){
+                            runDelay.reset();
+                            farCounter = 0;
+                        }
+                    break;
+                    }
+                }
+                else if(closeRangeCheck()){
+                    switch(closeCounter){
+                        case 0:
+                            runDelay.start();
+                            closeCounter++;
+                        break;
+
+                        case 1:
+                            if(runDelay.get() >= closeDelay){
+                                runDelay.stop();
+                                closeCounter++;
+                            }
+                            else{
+                                intake(intakeSpeed);
+                            }
+                        break;
+
+                        case 2:
+                        stopMotor();
+                        if(!ballHasEntered()){
+                            runDelay.reset();
+                            closeCounter = 0;
+                        }
+                        break;
+                    }
+                }
+                else{
+                    intake(intakeSpeed);
+                }
+            }        
         }
-        else{
-            intake(intakeSpeed);
-        }
-    }
+          
+
+        /*
+                if(ballHasEntered [value > 50]){
+                    if(its in far range){
+                        switch(case){
+                            case 0:
+                            startTimer
+                            case++
+
+                            case 1:
+                            if (timer > timerReached){
+                                stopTimer;
+                                case++
+                            }
+
+                            else{
+                                runIntake
+                            }
+
+                            case 2:
+                            stopMotor
+
+
+
+                        }
+                        act accordingly
+                    }
+
+                    else if(its in close range){
+                        act accordingly
+                    }
+
+                    else [its in the "perfect zone"]{
+                        act normally
+                    }
+                }
+
+        */
 
     private void feeding(){ // feeds the ball into the shooter
-        if (cargoCheck()){
+        if (targetRange()){
             intake(intakeSpeed);
         }
         else{
@@ -109,19 +242,24 @@ public class Intake {
     }
 
     public void displayMethod(){
-        SmartDashboard.putBoolean("Limit switch", cargoCheck()); // displays if the limit switch is being triggered
+       // SmartDashboard.putBoolean("Limit switch", cargoCheck()); // displays if the limit switch is being triggered
         SmartDashboard.putString("Mode", mode.toString()); // displays the current state of the intake
+        SmartDashboard.putNumber("Cargo Distance", getDistance());
+        SmartDashboard.putNumber("Timer", runDelay.get());
+        SmartDashboard.putNumber("Close Counter", closeCounter);
+        SmartDashboard.putNumber("Far Counter", farCounter);
     }
 
     public void run(){
 
         switch(mode){
+
             case INTAKING: // sets intake to intaking stage
             motorCheckIntake();
             break; 
 
             case OUTTAKING: // sets intake to outtaking stage
-            output(intakeSpeed);
+            output(outPutSpeed);
             break;
 
             case FEEDING: // sets intake to feeding stage
