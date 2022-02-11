@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -39,6 +40,7 @@ public class Robot extends TimedRobot {
   private ColorSensorV3 colorSensor;
   private Timer intakeTimer;
   private Joystick joystick;
+  private AnalogInput analog;
   private Intake intake; 
   
 
@@ -51,13 +53,15 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-  
+    
     intakeMotor = new WPI_TalonSRX(8); //get device id 
     holdSwitch = new DigitalInput(0); // get port for switch
     colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     intakeTimer = new Timer();
     joystick = new Joystick(0);
-    intake = new Intake(intakeMotor, colorSensor, intakeTimer); 
+    
+    analog = new AnalogInput(0);
+    intake = new Intake(intakeMotor, colorSensor, intakeTimer, analog); 
 
 
   }
@@ -114,6 +118,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic(){
     intake.displayMethod();
     //intake.intake(joystick.getY());
+    
     if (joystick.getRawButton(1)){ //get button
       intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
     }

@@ -5,9 +5,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput; 
 import edu.wpi.first.wpilibj.Timer;
 import com.revrobotics.ColorSensorV3;
-
+import edu.wpi.first.wpilibj.AnalogInput;
 
 public class Intake {
+
     private MotorController intakeMotor; // the intake motor
     //private DigitalInput holdSwitch; // limit switch
     private double slowIntakeSpeed = 0.25;
@@ -25,13 +26,15 @@ public class Intake {
     private int closeSpot = 280; //  180s - low 200s
     private int farLimit = 80;
     private int closeLimit = 90;
+    private AnalogInput analog;
     
 
-    public Intake(MotorController newIntakeMotor, /*DigitalInput newHoldSwitch,*/ ColorSensorV3 newColorSensorV3, Timer newRunDelay){
+    public Intake(MotorController newIntakeMotor, /*DigitalInput newHoldSwitch,*/ ColorSensorV3 newColorSensorV3, Timer newRunDelay, AnalogInput newAnalog){
         intakeMotor = newIntakeMotor;
         //holdSwitch = newHoldSwitch;
         colorSensor = newColorSensorV3;
         runDelay = newRunDelay;
+        analog = newAnalog;
     }
 
     public enum state{ // states of the intake
@@ -245,7 +248,19 @@ public class Intake {
         SmartDashboard.putNumber("Timer", runDelay.get());
         SmartDashboard.putNumber("Close Counter", closeCounter);
         SmartDashboard.putNumber("Far Counter", farCounter);
+        SmartDashboard.putNumber("voltage", analog.getVoltage());
+        SmartDashboard.putNumber("Accumulator Count", analog.getAccumulatorCount());
+        SmartDashboard.putNumber("Accumulator value", analog.getAccumulatorValue());
+        SmartDashboard.putNumber("Average bits", analog.getAverageBits());
+        SmartDashboard.putNumber("Average value", analog.getAverageValue());
+        SmartDashboard.putNumber("Average voltage", analog.getAverageVoltage());
+        SmartDashboard.putNumber("Channel", analog.getChannel());
+        //tDashboard.putNumber("LSB weight", analog.getLSBWeight());
+        SmartDashboard.putNumber("Offset", analog.getOffset());
+        SmartDashboard.putNumber("Oversample bits", analog.getOversampleBits());
+        SmartDashboard.putNumber("Value", analog.getValue());
     }
+
 
     public void run(){
 
