@@ -4,13 +4,10 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput; 
 import edu.wpi.first.wpilibj.Timer;
-
-import java.util.concurrent.CountDownLatch;
-
 import com.revrobotics.ColorSensorV3;
 
-public class Intake {
 
+public class Intake {
     private MotorController intakeMotor; // the intake motor
     //private DigitalInput holdSwitch; // limit switch
     private double slowIntakeSpeed = 0.25;
