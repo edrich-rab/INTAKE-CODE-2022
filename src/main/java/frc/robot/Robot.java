@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
     joystick = new Joystick(0);
     
     analog = new AnalogInput(0);
-    intake = new Intake(intakeMotor, colorSensor, intakeTimer, analog); 
+    intake = new Intake(intakeMotor, holdSwitch /*colorSensor, intakeTimer, analog*/); 
 
 
   }
@@ -110,7 +110,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    intake.timerReset();
+    //intake.timerReset();
   }
 
   /** This function is called periodically during operator control. */
