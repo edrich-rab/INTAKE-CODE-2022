@@ -55,13 +55,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     
     intakeMotor = new WPI_TalonSRX(8); //get device id 
-    holdSwitch = new DigitalInput(0); // get port for switch
-    colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+    holdSwitch = new DigitalInput(2); // get port for switch
+    //colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     intakeTimer = new Timer();
     joystick = new Joystick(0);
     
-    analog = new AnalogInput(0);
-    intake = new Intake(intakeMotor, holdSwitch /*colorSensor, intakeTimer, analog*/); 
+    //analog = new AnalogInput(0);
+    intake = new Intake(intakeMotor, holdSwitch, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
 
 
   }
@@ -116,7 +116,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic(){
-    intake.displayMethod();
+    //intake.displayMethod();
     //intake.intake(joystick.getY());
     
     if (joystick.getRawButton(1)){ //get button
