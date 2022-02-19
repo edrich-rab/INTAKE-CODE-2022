@@ -10,7 +10,7 @@ public class Intake {
     private double outtakeSpeed = 0.5; // test the speed out
     private double intakeSpeed = 0.4; // the speed of the intake motor
     private Timer timer; //timer for intake
-    private double holdDelay = 0.3; // test the delay time
+    private double holdDelay = 0.55; // test the delay time
 
     public Intake(MotorController newIntakeMotor, DigitalInput newHoldSwitch, Timer newTimer){
         intakeMotor = newIntakeMotor;
@@ -78,6 +78,7 @@ public class Intake {
         else{
             timer.reset();
             timer.stop();
+            setIntakeSpeed(intakeSpeed);
         }
     }
 
