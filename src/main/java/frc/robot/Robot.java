@@ -36,11 +36,9 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   private WPI_TalonSRX intakeMotor;
-  private DigitalInput holdSwitch;
-  private ColorSensorV3 colorSensor;
+  private DigitalInput intakeSensor;
   private Timer intakeTimer;
   private Joystick joystick;
-  private AnalogInput analog;
   private Intake intake; 
   
 
@@ -55,13 +53,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     
     intakeMotor = new WPI_TalonSRX(8); //get device id 
-    holdSwitch = new DigitalInput(2); // get port for switch
+    intakeSensor = new DigitalInput(2); // get port for switch
     //colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     intakeTimer = new Timer();
     joystick = new Joystick(0);
     
     //analog = new AnalogInput(0);
-    intake = new Intake(intakeMotor, holdSwitch, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
+    intake = new Intake(intakeMotor, intakeSensor, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
 
 
   }
