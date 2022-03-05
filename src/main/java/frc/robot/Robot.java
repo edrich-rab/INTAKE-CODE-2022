@@ -35,7 +35,9 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private WPI_TalonSRX intakeMotor;
+  private WPI_TalonSRX intakeBar;
+  private WPI_TalonSRX intakeExt;
+  private WPI_TalonSRX outerRollers;
   private DigitalInput intakeSensor;
   private Timer intakeTimer;
   private Joystick joystick;
@@ -52,14 +54,14 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     
-    intakeMotor = new WPI_TalonSRX(8); //get device id 
+    intakeBar = new WPI_TalonSRX(8); //get device id 
     intakeSensor = new DigitalInput(2); // get port for switch
     //colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     intakeTimer = new Timer();
     joystick = new Joystick(0);
     
     //analog = new AnalogInput(0);
-    intake = new Intake(intakeMotor, intakeSensor, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
+    intake = new Intake(intakeBar, intakeExt, outerRollers, intakeSensor, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
 
 
   }
@@ -131,6 +133,14 @@ public class Robot extends TimedRobot {
 
     else if (joystick.getRawButton(4)){ // if button 4 is pressed, motor will move forward ot be set into override mode
       intake.setOverrideMode();
+    }
+
+    else if (joystick.getRawButton(5)){
+      intake.setRetract();
+    }
+
+    else if (joystick.getRawButton(6)){
+      intake.setExtend();
     }
 
     else{
