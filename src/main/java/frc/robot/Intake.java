@@ -51,15 +51,15 @@ public class Intake {
     }
     
     public boolean cargoCheck(){ //checks if the beam is being broken or not
-        return !intakeSensor.get();
+        return intakeSensor.get();
     }
 
     public void setIntakeSpeed(double speed){ //method for the motor intaking
-        intakeMotor.set(-speed);
+        intakeMotor.set(speed);
     }
 
     public void setOuttakeSpeed(double speed){ //output or outtaking
-        intakeMotor.set(speed);
+        intakeMotor.set(-speed);
     }
 
     public void stopMotor(){ // stops motor
@@ -94,17 +94,18 @@ public class Intake {
     }
 
     public void displayMethod(){
-        SmartDashboard.putBoolean("Intake Sensor", cargoCheck()); // displays if the sensor is being triggered
+        SmartDashboard.putBoolean("Intake Sensor", intakeSensor.get()); // displays if the sensor is being triggered
         SmartDashboard.putString("Mode", mode.toString()); // displays the current state of the intake
         SmartDashboard.putNumber("Timer", timer.get()); // displays the time to the timer
+        SmartDashboard.putBoolean("Cargo Value", cargoCheck());
     }
 
     public void run(){
         displayMethod();
         switch(mode){
-            case INTAKING: // sets intake to intaking stage
+            /*case INTAKING: // sets intake to intaking stage
             intaking();
-            break; 
+            break; */
 
             case OUTTAKING: // sets intake to outtaking stage
             setOuttakeSpeed(outtakeSpeed);
