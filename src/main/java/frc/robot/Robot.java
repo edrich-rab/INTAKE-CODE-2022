@@ -116,39 +116,47 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic(){
-    //intake.displayMethod();
+    intake.displayMethod();
     //intake.intake(joystick.getY());
-    
-    if (joystick.getRawButton(1)){ //get button
-      intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
-    }
-
-    else if(joystick.getRawButton(2)) { // if button 2 is pressed, motor will outtake 
-      intake.setOutakeMode();
-    }
-
-    else if (joystick.getRawButton(3)){ // if button 3 is pressed, motor will be set to feeding mode
-      intake.setFeedingMode();
-    }
-
-    else if (joystick.getRawButton(4)){ // if button 4 is pressed, motor will move forward ot be set into override mode
-      intake.setOverrideMode();
-    }
-
-    else if (joystick.getRawButton(5)){
-      intake.setRetract();
-    }
-
-    else if (joystick.getRawButton(6)){
-      intake.setExtend();
-    }
-
-    else{
-      intake.setStopMode(); // if no buttons are pressed, the motor will not move 
-    }
+    if (joystick.getRawAxis(3) > 0 ){
+      if (joystick.getRawButton(1)){ //get button
+        intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
+      }
   
-    intake.run();
+      else if(joystick.getRawButton(2)) { // if button 2 is pressed, motor will outtake 
+        intake.setOutakeMode();
+      }
+  
+      else if (joystick.getRawButton(3)){ // if button 3 is pressed, motor will be set to feeding mode
+        intake.setFeedingMode();
+      }
+  
+      else if (joystick.getRawButton(4)){ // if button 4 is pressed, motor will move forward ot be set into override mode
+        intake.setOverrideMode();
+      }
+  
+      else if (joystick.getRawButton(5)){
+        intake.setRetract();
+      }
+  
+      else if (joystick.getRawButton(6)){
+        intake.setExtend();
+      }
+  
+      else{
+        intake.setStopMode(); // if no buttons are pressed, the motor will not move 
+      }
     
+      intake.run();
+    }
+    else if (joystick.getRawAxis(3) < 0){
+      if (joystick.getRawButton(1)){
+        intake.setIntakeSpeed(joystick.getY(), joystick.getY());
+      }
+      else if (joystick.getRawButton(2)){
+        intake.manualIntakeExt(joystick.getY());
+      }
+    }
   }
 
   /** This function is called once when the robot is disabled. */
