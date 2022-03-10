@@ -17,25 +17,26 @@ public class Intake {
     private Timer timer;                        // timer for intake
 
     //SENSOR VALUES:
-    private double holdDelay = 0.2;             // the delay time (TEST) 
-    private double extEncUp = 50;               // encoder for the extension going up (TEST)
-    private double extEncDown = -50;            // encoder for the extension going down(TEST)
+    private double holdDelay = 0.08;             // the delay time (TEST) 
+    private double extEncUp = -195;               // encoder for the extension going up (TEST) //-197 //-193 //-197
+    private double extEncDown = 190;            // encoder for the extension going down(TEST) //192 //199 //186
 
     //SPEEDS:
-    private double intakeSpeed = 0.7;           // the speed of the intake motor
+    private double intakeSpeed = 1;           // the speed of the intake motor
     private double feedingSpeed = 0.7;          // the speed of the motor when feeding
     private double outtakeSpeed = 0.5;          // the speed of the motor outtaking
     
-    private double intakeExtSpeed = 0.5;        // speed for intake extension (TEST)
-    private double outerRollerSpeed = 0.5;      // the speed of the outerRoller motor (TEST)
+    private double intakeExtSpeed = 0.4;        // speed for intake extension (TEST)
+    private double outerRollerSpeed = 1;      // the speed of the outerRoller motor (TEST)
 
     //
     private double extCounter = 0; 
     private int counter;
 
-    public Intake(MotorController newIntakeBar, MotorController newIntakeExt, MotorController newOuterRollers, DigitalInput newIntakeSensor, Timer newTimer){
+    public Intake(MotorController newIntakeBar, MotorController newIntakeExt, MotorController newOuterRollers, SingleChannelEncoder enc, DigitalInput newIntakeSensor, Timer newTimer){
         intakeBar = newIntakeBar;
         intakeExt = newIntakeExt;
+        intakeExtEnc = enc;
         outerRollers = newOuterRollers;
         intakeSensor = newIntakeSensor;
         timer = newTimer;
@@ -110,6 +111,7 @@ public class Intake {
     //retracts the intake up
     private void retract(double speedForIntakeExt){
        // resetEnc();
+       /*
         counter = 0;
        switch(counter){
            case 0:
@@ -120,7 +122,7 @@ public class Intake {
            break;
 
            case 1:
-           if (intakeExt.get() > extEncDown){
+           if (intakeExt.get() < extEncDown){
                intakeExt.set(-speedForIntakeExt);
             }
             else{
@@ -135,18 +137,20 @@ public class Intake {
 
             
        }
-       /*
-        if (intakeExtEnc.get() < extEncUp){
-            intakeExt.set(speedForIntakeExt);
+       */
+       
+        if (intakeExtEnc.get() > extEncUp){
+            intakeExt.set(-speedForIntakeExt);
         }
         else{
-            intakeExt.set(0);
+            stopIntakeExt();
         }
-       */
+       
     }
 
     //extends the intake down
     private void extend(double speedForIntakeExt){
+        /*
         counter = 0;
        switch(counter){
         case 0:
@@ -157,7 +161,7 @@ public class Intake {
         break;
 
         case 1:
-        if (intakeExtEnc.get() > extEncDown){
+        if (intakeExtEnc.get() > extEncUp){
             intakeExt.set(intakeExtSpeed);
         }
         else{
@@ -170,14 +174,15 @@ public class Intake {
         extCounter = 1;
         break;
        }
-       /*
-        if (intakeExtEnc.get() < extEncUp){
+       */
+       
+        if (intakeExtEnc.get() < extEncDown){
             intakeExt.set(speedForIntakeExt);
         }
         else{
-            intakeExt.set(0);
+            stopIntakeExt();
         }
-        */
+        
     }
 
     //manually moves the intake extension motor
@@ -187,7 +192,7 @@ public class Intake {
 
     //intakes cargo and holds it when switch is being triggered
     private void intaking(){ 
-        if (cargoCheck()){
+        if (!cargoCheck()){
             timer.start();
             if (timer.get() > holdDelay){
                 timer.stop();
@@ -206,7 +211,7 @@ public class Intake {
 
     // feeds the ball into the shooter
     private void feeding(){ 
-        if(cargoCheck()){
+        if(!cargoCheck()){
             setIntakeSpeed(feedingSpeed, 0);
         }
         else{
@@ -220,11 +225,14 @@ public class Intake {
 
     //displays sensor values and intake state
     public void displayMethod(){
+        
         SmartDashboard.putBoolean("Intake Sensor", cargoCheck());   // displays if the sensor is being triggered
         SmartDashboard.putString("Mode", mode.toString());          // displays the current state of the intake
         SmartDashboard.putNumber("Timer", timer.get());             // displays the time to the timer
         SmartDashboard.putNumber("Encoder for intake extension", intakeExtEnc.get());    // displays the encoder count
-        SmartDashboard.getNumber("Speed for extension", intakeExt.get());         // displays the speed of the intake extension 
+        SmartDashboard.putNumber("Speed for extension", intakeExt.get());         // displays the speed of the intake extension 
+        SmartDashboard.putNumber("Extension counter", extCounter);
+        SmartDashboard.putNumber("Case statement counter", counter);
     }
 
     public void run(){

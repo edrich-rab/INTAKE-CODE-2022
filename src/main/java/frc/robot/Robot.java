@@ -17,7 +17,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
@@ -36,12 +38,21 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   private WPI_TalonSRX intakeBar;
-  private WPI_TalonSRX intakeExt;
-  private WPI_TalonSRX outerRollers;
+  private WPI_VictorSPX intakeExt;
+  private WPI_VictorSPX outerRollers;
+  private SingleChannelEncoder intakeExtEnc;
+  private DigitalInput intakeExtChannel;
   private DigitalInput intakeSensor;
   private Timer intakeTimer;
   private Joystick joystick;
   private Intake intake; 
+
+  private CANSparkMax leftFront;
+  private CANSparkMax rightFront;
+  private CANSparkMax leftBack;
+  private CANSparkMax rightBack;
+  private Drive drive;
+
   
 
   /**
@@ -54,16 +65,26 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     
-    intakeBar = new WPI_TalonSRX(8); //get device id 
-    intakeSensor = new DigitalInput(2); // get port for switch
+    intakeBar = new WPI_TalonSRX(3); //get device id 
+    intakeExt = new WPI_VictorSPX(1);
+    intakeExtChannel = new DigitalInput(5);
+    intakeExtEnc = new SingleChannelEncoder(intakeExt, intakeExtChannel);
+    outerRollers = new WPI_VictorSPX(0);
+    intakeSensor = new DigitalInput(4); // get port for switch
     //colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     intakeTimer = new Timer();
     joystick = new Joystick(0);
     
     //analog = new AnalogInput(0);
-    intake = new Intake(intakeBar, intakeExt, outerRollers, intakeSensor, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
+    intake = new Intake(intakeBar, intakeExt, outerRollers, intakeExtEnc, intakeSensor, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
 
+    leftFront = new CANSparkMax(7, MotorType.kBrushless);
+    rightFront = new CANSparkMax(5, MotorType.kBrushless);
+    leftBack = new CANSparkMax(8, MotorType.kBrushless);
+    rightBack = new CANSparkMax(6, MotorType.kBrushless);
 
+    drive = new Drive(leftFront, leftBack, rightFront, rightBack);
+    
   }
 
   /**
@@ -116,11 +137,18 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic(){
-    intake.displayMethod();
+    //intake.displayMethod();
+    //drive.driveDisplay();
     //intake.intake(joystick.getY());
+
+    drive.arcadeDrive(-joystick.getX(), -joystick.getY());
+    //SmartDashboard.putNumber("ENC", intakeExtEnc.get());
     if (joystick.getRawAxis(3) > 0 ){
+      SmartDashboard.putString("MODE", "METHODS");
       if (joystick.getRawButton(1)){ //get button
+        drive.arcadeDrive(joystick.getX()/2, joystick.getY()/2);
         intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
+
       }
   
       else if(joystick.getRawButton(2)) { // if button 2 is pressed, motor will outtake 
@@ -137,25 +165,35 @@ public class Robot extends TimedRobot {
   
       else if (joystick.getRawButton(5)){
         intake.setRetract();
+
       }
   
       else if (joystick.getRawButton(6)){
         intake.setExtend();
-      }
+      } 
   
       else{
         intake.setStopMode(); // if no buttons are pressed, the motor will not move 
       }
-    
       intake.run();
     }
     else if (joystick.getRawAxis(3) < 0){
+      SmartDashboard.putString("MODE", "MANUAL");
       if (joystick.getRawButton(1)){
         intake.setIntakeSpeed(joystick.getY(), joystick.getY());
       }
       else if (joystick.getRawButton(2)){
         intake.manualIntakeExt(joystick.getY());
       }
+      else{
+        intake.setIntakeSpeed(0, 0);
+        intake.manualIntakeExt(0);
+      }
+
+      if(joystick.getRawButton(3)){
+        intakeExtEnc.reset();
+      }
+      intake.displayMethod();
     }
   }
 
