@@ -31,7 +31,7 @@ public class Intake {
 
     //
     private double extCounter = 0; 
-    private int counter = 0;
+    private int counter;
 
     public Intake(MotorController newIntakeBar, MotorController newIntakeExt, MotorController newOuterRollers, DigitalInput newIntakeSensor, Timer newTimer){
         intakeBar = newIntakeBar;
@@ -110,11 +110,10 @@ public class Intake {
     //retracts the intake up
     private void retract(double speedForIntakeExt){
        // resetEnc();
-
+        counter = 0;
        switch(counter){
-
            case 0:
-           if (extCounter == 1){
+           if (extCounter == 1){ // 1 is when 
                resetEnc();
            }
            counter++;
@@ -126,26 +125,32 @@ public class Intake {
             }
             else{
                 stopIntakeExt();
+                counter++;
             }
+            break;
+
+            case 2:
+            extCounter = 0;
+            break;
 
             
        }
-
+       /*
         if (intakeExtEnc.get() < extEncUp){
             intakeExt.set(speedForIntakeExt);
         }
         else{
             intakeExt.set(0);
-            counter = 0;
         }
+       */
     }
 
     //extends the intake down
     private void extend(double speedForIntakeExt){
+        counter = 0;
        switch(counter){
-
         case 0:
-        if (extCounter == 0){
+        if (extCounter == 0){ // 0 is when ext is up
             resetEnc();
         }
         counter++;
@@ -161,12 +166,18 @@ public class Intake {
         }
         break;
         
-
         case 2:
-        counter = 1;
+        extCounter = 1;
         break;
        }
-
+       /*
+        if (intakeExtEnc.get() < extEncUp){
+            intakeExt.set(speedForIntakeExt);
+        }
+        else{
+            intakeExt.set(0);
+        }
+        */
     }
 
     //manually moves the intake extension motor
