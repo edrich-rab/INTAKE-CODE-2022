@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.AnalogInput;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -45,6 +46,7 @@ public class Robot extends TimedRobot {
   private DigitalInput intakeSensor;
   private Timer intakeTimer;
   private Joystick joystick;
+  private DigitalInput armLimit;
   private Intake intake; 
 
   private CANSparkMax leftFront;
@@ -66,17 +68,20 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     
     intakeBar = new WPI_TalonSRX(3); //get device id 
+    intakeBar.setNeutralMode(NeutralMode.Brake);
     intakeExt = new WPI_VictorSPX(1);
     intakeExtChannel = new DigitalInput(5);
     intakeExtEnc = new SingleChannelEncoder(intakeExt, intakeExtChannel);
     outerRollers = new WPI_VictorSPX(0);
+    outerRollers.setNeutralMode(NeutralMode.Brake);
     intakeSensor = new DigitalInput(4); // get port for switch
     //colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     intakeTimer = new Timer();
     joystick = new Joystick(0);
+    armLimit = new DigitalInput(6);
     
     //analog = new AnalogInput(0);
-    intake = new Intake(intakeBar, intakeExt, outerRollers, intakeExtEnc, intakeSensor, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
+    intake = new Intake(intakeBar, intakeExt, outerRollers, intakeExtEnc, intakeSensor, armLimit, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
 
     leftFront = new CANSparkMax(7, MotorType.kBrushless);
     rightFront = new CANSparkMax(5, MotorType.kBrushless);
@@ -141,7 +146,7 @@ public class Robot extends TimedRobot {
     //drive.driveDisplay();
     //intake.intake(joystick.getY());
 
-    drive.arcadeDrive(-joystick.getX(), -joystick.getY());
+    //drive.arcadeDrive(-joystick.getX(), -joystick.getY());
     //SmartDashboard.putNumber("ENC", intakeExtEnc.get());
     if (joystick.getRawAxis(3) > 0 ){
       SmartDashboard.putString("MODE", "METHODS");
@@ -171,18 +176,24 @@ public class Robot extends TimedRobot {
       else if (joystick.getRawButton(6)){
         intake.setExtend();
       } 
+
+      else if (joystick.getRawButton(7)){
+        intake.setMidway();
+      }
   
       else{
         intake.setStopMode(); // if no buttons are pressed, the motor will not move 
       }
-      intake.run();
+      
     }
     else if (joystick.getRawAxis(3) < 0){
       SmartDashboard.putString("MODE", "MANUAL");
       if (joystick.getRawButton(1)){
+        intake.setTestingMode();
         intake.setIntakeSpeed(joystick.getY(), joystick.getY());
       }
       else if (joystick.getRawButton(2)){
+        intake.setTestingMode();
         intake.manualIntakeExt(joystick.getY());
       }
       else{
@@ -194,6 +205,7 @@ public class Robot extends TimedRobot {
         intakeExtEnc.reset();
       }
       intake.displayMethod();
+      intake.run();
     }
   }
 
