@@ -63,17 +63,6 @@ public class Intake {
         intakeMode = intakeState.INTAKING;
     }
 
-    public void setRetract(){
-        armMode = armState.RETRACT;       //sets mode to when the extension is up
-    }
-
-    public void setExtend(){
-        armMode = armState.EXTEND;        //sets mode to when the extension is down
-    }
-    
-    public void setMidway(){
-        armMode = armState.MIDWAY;
-    }
     public void setOutakeMode(){    //sets mode to outtake
         intakeMode = intakeState.OUTTAKING;
     }
@@ -99,7 +88,19 @@ public class Intake {
     }
     
     public void setArmStopMode(){
-        armMode= armState.STOP;
+        armMode = armState.STOP;
+    }
+
+    public void setRetract(){
+        armMode = armState.RETRACT;       //sets mode to when the extension is up
+    }
+
+    public void setExtend(){
+        armMode = armState.EXTEND;        //sets mode to when the extension is down
+    }
+    
+    public void setMidway(){
+        armMode = armState.MIDWAY;
     }
 
     public boolean cargoCheck(){    //checks if the beam is being broken or not

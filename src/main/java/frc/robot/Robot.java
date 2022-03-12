@@ -151,7 +151,7 @@ public class Robot extends TimedRobot {
     if (joystick.getRawAxis(3) > 0 ){
       SmartDashboard.putString("MODE", "METHODS");
       if (joystick.getRawButton(1)){ //get button
-        drive.arcadeDrive(joystick.getX()/2, joystick.getY()/2);
+        drive.arcadeDrive(-joystick.getX()/2, -joystick.getY()/2);
         intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
       }
   
@@ -171,6 +171,8 @@ public class Robot extends TimedRobot {
         intake.setIntakeStopMode();
       }
   
+
+
       if (joystick.getRawButton(5)){
         intake.setRetract();
       }
@@ -219,13 +221,17 @@ public class Robot extends TimedRobot {
       intake.setArmStopMode();
     }
 
-    if (joystick.getRawButton(2)){
+    if(joystick.getRawButton(2)){
       intake.setIntakeTestingMode();
       intake.setIntakeSpeed(joystick.getY(), joystick.getY());
     }
 
     else{
       intake.setIntakeStopMode();
+    }
+
+    if(joystick.getRawButton(3)){
+      intake.resetEnc();
     }
   }
 
