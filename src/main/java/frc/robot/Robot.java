@@ -166,10 +166,13 @@ public class Robot extends TimedRobot {
       else if (joystick.getRawButton(4)){ // if button 4 is pressed, motor will move forward ot be set into override mode
         intake.setOverrideMode();
       }
-  
-      else if (joystick.getRawButton(5)){
-        intake.setRetract();
 
+      else{
+        intake.setIntakeStopMode();
+      }
+  
+      if (joystick.getRawButton(5)){
+        intake.setRetract();
       }
   
       else if (joystick.getRawButton(6)){
@@ -181,14 +184,13 @@ public class Robot extends TimedRobot {
       }
   
       else{
-        intake.setStopMode(); // if no buttons are pressed, the motor will not move 
+        intake.setArmStopMode(); // if no buttons are pressed, the motor will not move 
       }
-      intake.run();
-      
     }
+
     else if (joystick.getRawAxis(3) < 0){
       SmartDashboard.putString("MODE", "MANUAL");
-      if (joystick.getRawButton(1)){
+  /*  if (joystick.getRawButton(1)){
         intake.setTestingMode();
         intake.setIntakeSpeed(joystick.getY(), joystick.getY());
       }
@@ -206,8 +208,29 @@ public class Robot extends TimedRobot {
       }
       intake.displayMethod();
       intake.run();
+    */
+
+    if(joystick.getRawButton(1)){
+      intake.setArmTestingMode();
+      intake.manualIntakeExt(joystick.getY());
+    }
+
+    else{
+      intake.setArmStopMode();
+    }
+
+    if (joystick.getRawButton(2)){
+      intake.setIntakeTestingMode();
+      intake.setIntakeSpeed(joystick.getY(), joystick.getY());
+    }
+
+    else{
+      intake.setIntakeStopMode();
     }
   }
+
+  intake.intakeRun();
+}
 
   /** This function is called once when the robot is disabled. */
   @Override
