@@ -153,7 +153,6 @@ public class Robot extends TimedRobot {
       if (joystick.getRawButton(1)){ //get button
         drive.arcadeDrive(joystick.getX()/2, joystick.getY()/2);
         intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
-
       }
   
       else if(joystick.getRawButton(2)) { // if button 2 is pressed, motor will outtake 
@@ -184,6 +183,7 @@ public class Robot extends TimedRobot {
       else{
         intake.setStopMode(); // if no buttons are pressed, the motor will not move 
       }
+      intake.run();
       
     }
     else if (joystick.getRawAxis(3) < 0){

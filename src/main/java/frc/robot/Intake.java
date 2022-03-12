@@ -111,13 +111,13 @@ public class Intake {
     //method for the motor intaking
     public void setIntakeSpeed(double speedForBar, double speedForRollers){     
         intakeBar.set(-speedForBar);
-        outerRollers.set(speedForRollers); // test motor
+        outerRollers.set(-speedForRollers); // test motor
     }
 
     //output or outtaking
     public void setOuttakeSpeed(double speedForBar, double speedForRollers){ 
         intakeBar.set(speedForBar);
-        outerRollers.set(-speedForRollers); // test motor
+        outerRollers.set(speedForRollers); // test motor
     }
 
     //stops motor
