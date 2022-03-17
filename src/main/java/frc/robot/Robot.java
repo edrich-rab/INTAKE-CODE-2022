@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
     armLimit = new DigitalInput(6);
     
     //analog = new AnalogInput(0);
-    intake = new Intake(intakeBar, intakeExt, outerRollers, intakeExtEnc, intakeSensor, armLimit, intakeTimer); /*colorSensor, intakeTimer, analog*/ 
+    intake = new Intake(intakeBar, intakeExt, outerRollers, intakeExtEnc, intakeSensor, armLimit); /*colorSensor, intakeTimer, analog*/ 
 
     leftFront = new CANSparkMax(7, MotorType.kBrushless);
     rightFront = new CANSparkMax(5, MotorType.kBrushless);
@@ -150,8 +150,8 @@ public class Robot extends TimedRobot {
     //SmartDashboard.putNumber("ENC", intakeExtEnc.get());
     if (joystick.getRawAxis(3) > 0 ){
       SmartDashboard.putString("MODE", "METHODS");
+      drive.arcadeDrive(-joystick.getX(), -joystick.getY());
       if (joystick.getRawButton(1)){ //get button
-        drive.arcadeDrive(-joystick.getX()/2, -joystick.getY()/2);
         intake.setIntakeMode(); // if button 1 is pressed, motor will intake 
       }
   
@@ -165,6 +165,7 @@ public class Robot extends TimedRobot {
   
       else if (joystick.getRawButton(4)){ // if button 4 is pressed, motor will move forward ot be set into override mode
         intake.setOverrideMode();
+        intake.setArmOverride();
       }
 
       else{
@@ -186,7 +187,12 @@ public class Robot extends TimedRobot {
       }
   
       else{
-        intake.setArmStopMode(); // if no buttons are pressed, the motor will not move 
+        if(!intake.cargoCheck()){
+          intake.setMidway();
+        }
+        else{
+          intake.setArmStopMode();
+        }
       }
     }
 
@@ -214,11 +220,13 @@ public class Robot extends TimedRobot {
 
     if(joystick.getRawButton(1)){
       intake.setArmTestingMode();
-      intake.manualIntakeExt(joystick.getY());
+      intake.manualIntakeExt(-0.55);
+      intake.startTimer();
     }
 
     else{
       intake.setArmStopMode();
+      intake.stopTimer();
     }
 
     if(joystick.getRawButton(2)){
@@ -229,12 +237,12 @@ public class Robot extends TimedRobot {
     else{
       intake.setIntakeStopMode();
     }
-
+/*
     if(joystick.getRawButton(3)){
-      intake.resetEnc();
+      intake.resetTimer();
     }
+    */
   }
-
   intake.intakeRun();
 }
 
