@@ -169,6 +169,7 @@ public class Robot extends TimedRobot {
       }
 
       else{
+  
         intake.setIntakeStopMode();
       }
   
@@ -187,12 +188,7 @@ public class Robot extends TimedRobot {
       }
   
       else{
-        if(!intake.cargoCheck()){
-          intake.setMidway();
-        }
-        else{
-          intake.setArmStopMode();
-        }
+        intake.setArmStopMode();
       }
     }
 
