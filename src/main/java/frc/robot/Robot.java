@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   private WPI_TalonSRX intakeBar;
-  private WPI_VictorSPX intakeExt;
+  private WPI_TalonSRX intakeExt;
   private WPI_VictorSPX outerRollers;
   private SingleChannelEncoder intakeExtEnc;
   private DigitalInput intakeExtChannel;
@@ -69,7 +69,8 @@ public class Robot extends TimedRobot {
     
     intakeBar = new WPI_TalonSRX(3); //get device id 
     intakeBar.setNeutralMode(NeutralMode.Brake);
-    intakeExt = new WPI_VictorSPX(1);
+    intakeExt = new WPI_TalonSRX(5);
+    intakeExt.setNeutralMode(NeutralMode.Coast);
     intakeExtChannel = new DigitalInput(5);
     intakeExtEnc = new SingleChannelEncoder(intakeExt, intakeExtChannel);
     outerRollers = new WPI_VictorSPX(0);
