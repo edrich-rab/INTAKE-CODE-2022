@@ -306,7 +306,7 @@ public class Intake {
             break;
 
             case OVERRIDE:
-            setIntakeSpeed(intakeSpeed, outerRollerSpeed);      // FIX OVERRIDE; BYPASS ARM GOING UP TOMORROW
+            setIntakeSpeed(intakeSpeed, outerRollerSpeed);     
             break;
 
             case STOP:
